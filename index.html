@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דף נחיתה - חידת גוון עמוק</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #FFFFFF; /* White for general text and success */
+            --danger-color: #F44336; /* Red for error */
+            --input-border-color: #6a0dad; /* Purple for input border/focus */
+            --button-bg-color: #6a0dad; /* Purple for button */
+            --button-hover-bg: #8c00b3; /* Darker purple on hover */
+            --shadow-color: rgba(0, 0, 0, 0.7); /* Dark shadow for depth */
+            --black-color: #000000;
+            --white-color: #FFFFFF;
+            --red-color: #FF0000;
+            --blue-color: #0000FF;
+            --green-color: #00FF00;
+            --yellow-color: #FFFF00;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Align content to start initially */
+            align-items: center;     /* Center content horizontally */
+            min-height: 100vh;       /* Full viewport height */
+            color: var(--primary-color);
+            background-color: var(--black-color);
+            overflow-y: auto; /* Allow scrolling on the body if content overflows */
+        }
+
+        /* Initial Puzzle Container */
+        .puzzle-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align to start */
+            text-align: center;
+            opacity: 1; /* Ensure visible initially */
+            transition: opacity 0.5s ease-in-out;
+            padding-bottom: 30px; /* Space for content at the bottom */
+            box-sizing: border-box;
+            flex-grow: 1; /* Allow it to grow and take space */
+        }
+
+        .puzzle-container::before {
+            content: '';
+            position: fixed; /* Fixed to cover the whole viewport */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/a.jpg');
+            background-size: cover; /* Cover the entire area */
+            background-position: center center;
+            background-repeat: no-repeat;
+            z-index: -1; /* Place behind content */
+            opacity: 0.6; /* Slight transparency for text readability */
+            filter: brightness(0.7); /* Darken the image slightly */
+        }
+
+        .content-overlay {
+            position: relative; /* To be above the background image */
+            z-index: 1;
+            width: 90%;
+            max-width: 600px; /* Limit content width on large screens */
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background for content */
+            border-radius: 10px;
+            margin-top: 20px; /* Offset from top */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 40px); /* Fill most of the screen height */
+            /* Ensure content fits without overflow, allows internal scroll if needed */
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .puzzle-container h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 5px var(--shadow-color);
+        }
+
+        .puzzle-container h2 {
+            font-size: 1.1em;
+            font-weight: 400;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 3px var(--shadow-color);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px; /* Space between input rows */
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .color-box {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            margin-inline-end: 15px; /* Space to the right of the box */
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+
+        .color-box.red { background-color: var(--red-color); }
+        .color-box.blue { background-color: var(--blue-color); }
+        .color-box.green { background-color: var(--green-color); }
+        .color-box.yellow { background-color: var(--yellow-color); }
+
+        .input-group input[type="text"] {
+            flex-grow: 1; /* Allow input to take remaining space */
+            padding: 12px;
+            font-size: 1em;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+            text-align: center;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input[type="text"]:focus {
+            border-color: var(--input-border-color);
+        }
+
+        button#submitButton {
+            background-color: var(--button-bg-color);
+            color: var(--primary-color);
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4);
+            width: 100%;
+            max-width: 350px;
+            margin-top: 30px; /* Space above button */
+        }
+
+        button#submitButton:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(106, 13, 173, 0.6);
+        }
+
+        button#submitButton:active {
+            transform: translateY(1px);
+        }
+
+        .result-message {
+            margin-top: 25px;
+            font-size: 1.6em;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            display: none; /* Hidden by default */
+            color: var(--primary-color);
+            z-index: 10;
+        }
+
+        .result-message.error {
+            color: var(--danger-color);
+        }
+        .result-message.success {
+            color: var(--primary-color);
+        }
+
+        /* Animations */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            transform: translate3d(0, 0, 0); 
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+
+        .star-burst-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; 
+            overflow: hidden;
+            z-index: 9999; 
+        }
+
+        .star-particle {
+            position: absolute;
+            background-color: #FFF;
+            border-radius: 50%;
+            opacity: 0;
+            animation: star-sparkle 1.5s forwards; 
+        }
+
+        @keyframes star-sparkle {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+        }
+
+        /* Success Content Styles */
+        #successContent {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align to top */
+            padding: 20px;
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 700px; /* Control max width for better readability */
+            min-height: 100vh; /* Attempt to fill viewport, but content will manage overflow */
+            background-color: rgba(0, 0, 0, 0.8); /* Darker overlay for new content */
+            color: var(--primary-color);
+            border-radius: 10px;
+            position: relative;
+            z-index: 2;
+            opacity: 0; /* Starts hidden */
+            transition: opacity 0.5s ease-in-out;
+            overflow-y: auto; /* Allow scrolling within this container */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #successContent h3 {
+            font-size: 1.8em;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px var(--shadow-color);
+        }
+
+        #successContent img.success-top-image {
+            max-width: 90%; /* Responsive width */
+            height: auto;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .color-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Align to start for image-equal-numbers layout */
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 450px; /* Limit width of info rows */
+        }
+
+        .color-info-row img {
+            width: 60px; /* Smaller icons for success content */
+            height: 60px;
+            object-fit: contain;
+            margin-inline-end: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+
+        .color-info-row .equal-sign {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-inline-end: 15px;
+            flex-shrink: 0;
+        }
+
+        .color-info-row .numbers {
+            font-size: 1.1em;
+            font-weight: 400;
+            direction: ltr; /* Ensure numbers are LTR */
+            flex-grow: 1; /* Allow numbers to take available space */
+            text-align: left; /* Align numbers to the left */
+            line-height: 1.3;
+            word-break: break-word; /* Allow long number strings to wrap */
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .puzzle-container h1 {
+                font-size: 1.8em;
+            }
+            .puzzle-container h2 {
+                font-size: 1em;
+            }
+            .input-group {
+                flex-direction: row; /* Keep side-by-side on tablets */
+                max-width: 300px;
+            }
+            .color-box {
+                width: 35px;
+                height: 35px;
+                margin-inline-end: 10px;
+            }
+            .input-group input[type="text"] {
+                padding: 10px;
+                font-size: 0.95em;
+            }
+            button#submitButton {
+                padding: 12px 25px;
+                font-size: 1.1em;
+                max-width: 300px;
+            }
+            .result-message {
+                font-size: 1.4em;
+            }
+
+            /* Success Content adjustments for tablets */
+            #successContent img.success-top-image {
+                max-width: 95%;
+            }
+            .color-info-row img {
+                width: 50px;
+                height: 50px;
+                margin-inline-end: 10px;
+            }
+            .color-info-row .equal-sign {
+                font-size: 1.2em;
+                margin-inline-end: 10px;
+            }
+            .color-info-row .numbers {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .puzzle-container h1 {
+                font-size: 1.5em;
+            }
+            .puzzle-container h2 {
+                font-size: 0.9em;
+                padding: 0 10px; /* Add horizontal padding to prevent overflow */
+            }
+            .content-overlay {
+                padding: 15px;
+                margin-top: 10px;
+                min-height: calc(100vh - 20px);
+            }
+            .input-group {
+                flex-direction: column; /* Stack on mobile */
+                align-items: flex-end; /* Align elements to the right in RTL */
+                margin-bottom: 10px;
+                max-width: 95%; /* Allow it to be wider */
+            }
+            .color-box {
+                width: 30px;
+                height: 30px;
+                margin-bottom: 5px; /* Space between box and input when stacked */
+                margin-inline-end: 0; /* Remove horizontal margin when stacked */
+                align-self: flex-start; /* Align box to left if stacking */
+                margin-right: auto; /* Push it to the right in RTL flex-end */
+                margin-left: unset; /* Remove default left margin if any */
+            }
+             .input-group input[type="text"] {
+                font-size: 0.9em;
+                width: 100%; /* Full width when stacked */
+                max-width: 250px; /* But limit max width */
+                text-align: right; /* Align text to right in RTL */
+            }
+            button#submitButton {
+                font-size: 1em;
+                padding: 10px 20px;
+                max-width: 250px;
+                margin-top: 20px;
+            }
+            .result-message {
+                font-size: 1.1em;
+                margin-top: 15px;
+            }
+
+            /* Success Content adjustments for mobile */
+            #successContent {
+                padding: 15px;
+            }
+            #successContent img.success-top-image {
+                max-width: 100%;
+                margin-bottom: 15px;
+            }
+            .color-info-row {
+                flex-direction: row; /* Keep side-by-side in success */
+                align-items: center;
+                justify-content: flex-start; /* Align to start for consistency */
+                margin-bottom: 10px;
+                max-width: 95%; /* Make rows wider for mobile */
+            }
+            .color-info-row img {
+                width: 40px; /* Even smaller icons */
+                height: 40px;
+                margin-inline-end: 10px;
+            }
+            .color-info-row .equal-sign {
+                font-size: 1.1em;
+                margin-inline-end: 10px;
+            }
+            .color-info-row .numbers {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="puzzle-container" id="puzzleContainer">
+        <div class="content-overlay">
+            <h1>איזה גוון יותר עמוק?</h1>
+            <h2>לגוון העמוק ביותר הקלד "a", לגוון כמעט הכי עמוק הקלד "b", לגוון כמעט הכי פחות עמוק הקלד "c", לגוון הכי פחות עמוק הקלד "d"</h2>
+            
+            <div class="input-group">
+                <div class="color-box red"></div>
+                <input type="text" id="redInput" placeholder="הקלד כאן">
+            </div>
+            <div class="input-group">
+                <div class="color-box blue"></div>
+                <input type="text" id="blueInput" placeholder="הקלד כאן">
+            </div>
+            <div class="input-group">
+                <div class="color-box green"></div>
+                <input type="text" id="greenInput" placeholder="הקלד כאן">
+            </div>
+            <div class="input-group">
+                <div class="color-box yellow"></div>
+                <input type="text" id="yellowInput" placeholder="הקלד כאן">
+            </div>
+
+            <button id="submitButton">זאת התשובה, אני בטוח!</button>
+            <div id="resultMessage" class="result-message"></div>
+        </div>
+    </div>
+
+    <div id="successContent">
+        <h3 id="successMessageText">תשובה נכונה! המנעול נפתח, גזור את האזיקון.</h3>
+        <img src="images/b.jpg" alt="Success image" class="success-top-image">
+
+        <div class="color-info-row">
+            <img src="images/black.jpg" alt="Black Color Icon">
+            <span class="equal-sign">=</span>
+            <span class="numbers">301, 328, 355, 382</span>
+        </div>
+        <div class="color-info-row">
+            <img src="images/white.jpg" alt="
