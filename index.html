@@ -29,6 +29,7 @@
             padding: 0;
             overflow-x: hidden; /* Prevent horizontal scroll */
             box-sizing: border-box;
+            background-color: var(--black-color); /* Ensure body background is black */
         }
 
         body {
@@ -39,11 +40,10 @@
             align-items: center;     /* Center content horizontally */
             min-height: 100vh;       /* Full viewport height */
             color: var(--primary-color);
-            background-color: var(--black-color);
-            overflow-y: auto; /* Allow scrolling on the body if content overflows */
+            /* overflow-y: auto; -- Managed by specific containers now */
         }
 
-        /* Initial Puzzle Container */
+        /* Initial Puzzle Container - now holds the image and content */
         .puzzle-container {
             position: relative;
             width: 100%;
@@ -56,42 +56,38 @@
             transition: opacity 0.5s ease-in-out;
             padding-bottom: 30px; /* Space for content at the bottom */
             box-sizing: border-box;
-            flex-grow: 1; /* Allow it to grow and take space */
+            flex-grow: 1; /* Allows it to take available space */
+            background-color: transparent; /* Background will be on the content overlay now */
         }
 
-        .puzzle-container::before {
-            content: '';
-            position: fixed; /* Fixed to cover the whole viewport */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('images/a.jpg');
-            background-size: cover; /* Cover the entire area */
-            background-position: center center;
-            background-repeat: no-repeat;
-            z-index: -1; /* Place behind content */
-            opacity: 0.6; /* Slight transparency for text readability */
-            filter: brightness(0.7); /* Darken the image slightly */
+        /* Image a.jpg at the top of the puzzle container */
+        .puzzle-container img.main-header-image {
+            width: 100%; /* Spans full width */
+            height: auto; /* Maintain aspect ratio */
+            object-fit: contain; /* Ensure entire image is visible, no cropping */
+            display: block; /* Remove extra space below image */
+            margin-bottom: 20px; /* Space below image */
+            max-height: 40vh; /* Limit height to prevent it from taking too much screen space */
+            /* If the image is very wide and short, adjust max-height accordingly */
+            /* If it's a very tall image, this will ensure it doesn't push content off screen */
         }
 
         .content-overlay {
-            position: relative; /* To be above the background image */
+            position: relative;
             z-index: 1;
             width: 90%;
-            max-width: 600px; /* Limit content width on large screens */
+            max-width: 600px;
             padding: 20px;
             box-sizing: border-box;
-            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background for content */
+            background-color: rgba(0, 0, 0, 0.7); /* Darker semi-transparent background for text */
             border-radius: 10px;
-            margin-top: 20px; /* Offset from top */
+            margin-top: 0; /* No top margin here as image is above it */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: calc(100vh - 40px); /* Fill most of the screen height */
-            /* Ensure content fits without overflow, allows internal scroll if needed */
-            overflow-y: auto; 
+            flex-grow: 1; /* Allows it to take available space within puzzle-container */
+            overflow-y: auto; /* Allow internal scrolling if content is too tall */
             -webkit-overflow-scrolling: touch;
         }
 
@@ -113,7 +109,7 @@
         .input-group {
             display: flex;
             align-items: center;
-            margin-bottom: 15px; /* Space between input rows */
+            margin-bottom: 15px;
             width: 100%;
             max-width: 350px;
         }
@@ -123,8 +119,8 @@
             height: 40px;
             border: 2px solid var(--primary-color);
             border-radius: 5px;
-            margin-inline-end: 15px; /* Space to the right of the box */
-            flex-shrink: 0; /* Prevent shrinking */
+            margin-inline-end: 15px;
+            flex-shrink: 0;
         }
 
         .color-box.red { background-color: var(--red-color); }
@@ -133,7 +129,7 @@
         .color-box.yellow { background-color: var(--yellow-color); }
 
         .input-group input[type="text"] {
-            flex-grow: 1; /* Allow input to take remaining space */
+            flex-grow: 1;
             padding: 12px;
             font-size: 1em;
             border: 2px solid var(--primary-color);
@@ -163,7 +159,7 @@
             box-shadow: 0 4px 15px rgba(106, 13, 173, 0.4);
             width: 100%;
             max-width: 350px;
-            margin-top: 30px; /* Space above button */
+            margin-top: 30px;
         }
 
         button#submitButton:hover {
@@ -181,7 +177,7 @@
             font-size: 1.6em;
             font-weight: 700;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-            display: none; /* Hidden by default */
+            display: none;
             color: var(--primary-color);
             z-index: 10;
         }
@@ -205,7 +201,7 @@
 
         .shake {
             animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-            transform: translate3d(0, 0, 0); 
+            transform: translate3d(0, 0, 0);
             backface-visibility: hidden;
             perspective: 1000px;
         }
@@ -216,9 +212,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; 
+            pointer-events: none;
             overflow: hidden;
-            z-index: 9999; 
+            z-index: 9999;
         }
 
         .star-particle {
@@ -226,7 +222,7 @@
             background-color: #FFF;
             border-radius: 50%;
             opacity: 0;
-            animation: star-sparkle 1.5s forwards; 
+            animation: star-sparkle 1.5s forwards;
         }
 
         @keyframes star-sparkle {
@@ -246,23 +242,23 @@
 
         /* Success Content Styles */
         #successContent {
-            display: none; /* Hidden by default */
+            display: none;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Align to top */
+            justify-content: flex-start;
             padding: 20px;
             box-sizing: border-box;
             width: 100%;
-            max-width: 700px; /* Control max width for better readability */
-            min-height: 100vh; /* Attempt to fill viewport, but content will manage overflow */
-            background-color: rgba(0, 0, 0, 0.8); /* Darker overlay for new content */
+            max-width: 700px;
+            min-height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8);
             color: var(--primary-color);
             border-radius: 10px;
             position: relative;
             z-index: 2;
-            opacity: 0; /* Starts hidden */
+            opacity: 0;
             transition: opacity 0.5s ease-in-out;
-            overflow-y: auto; /* Allow scrolling within this container */
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -274,7 +270,7 @@
         }
 
         #successContent img.success-top-image {
-            max-width: 90%; /* Responsive width */
+            max-width: 90%;
             height: auto;
             margin-bottom: 25px;
             border-radius: 8px;
@@ -284,20 +280,20 @@
         .color-info-row {
             display: flex;
             align-items: center;
-            justify-content: flex-start; /* Align to start for image-equal-numbers layout */
+            justify-content: flex-start;
             margin-bottom: 15px;
             width: 100%;
-            max-width: 450px; /* Limit width of info rows */
+            max-width: 450px;
         }
 
         .color-info-row img {
-            width: 60px; /* Smaller icons for success content */
+            width: 60px;
             height: 60px;
             object-fit: contain;
             margin-inline-end: 15px;
             border-radius: 5px;
             box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-            flex-shrink: 0; /* Prevent shrinking */
+            flex-shrink: 0;
         }
 
         .color-info-row .equal-sign {
@@ -310,15 +306,18 @@
         .color-info-row .numbers {
             font-size: 1.1em;
             font-weight: 400;
-            direction: ltr; /* Ensure numbers are LTR */
-            flex-grow: 1; /* Allow numbers to take available space */
-            text-align: left; /* Align numbers to the left */
+            direction: ltr;
+            flex-grow: 1;
+            text-align: left;
             line-height: 1.3;
-            word-break: break-word; /* Allow long number strings to wrap */
+            word-break: break-word;
         }
 
         /* Media Queries for Responsiveness */
         @media (max-width: 768px) {
+            .puzzle-container img.main-header-image {
+                max-height: 35vh; /* Slightly less height on tablets */
+            }
             .puzzle-container h1 {
                 font-size: 1.8em;
             }
@@ -326,7 +325,6 @@
                 font-size: 1em;
             }
             .input-group {
-                flex-direction: row; /* Keep side-by-side on tablets */
                 max-width: 300px;
             }
             .color-box {
@@ -366,37 +364,40 @@
         }
 
         @media (max-width: 480px) {
+            .puzzle-container img.main-header-image {
+                max-height: 30vh; /* Even less height on mobile */
+                margin-bottom: 10px; /* Reduced margin */
+            }
             .puzzle-container h1 {
                 font-size: 1.5em;
             }
             .puzzle-container h2 {
                 font-size: 0.9em;
-                padding: 0 10px; /* Add horizontal padding to prevent overflow */
+                padding: 0 10px;
+                margin-bottom: 20px; /* Reduced margin */
             }
             .content-overlay {
                 padding: 15px;
-                margin-top: 10px;
-                min-height: calc(100vh - 20px);
+                margin-top: 0; /* Ensure no top margin */
+                /* min-height: calc(100vh - (image height + 20px)); - Dynamic height is better handled by flex-grow */
             }
             .input-group {
-                flex-direction: column; /* Stack on mobile */
-                align-items: flex-end; /* Align elements to the right in RTL */
+                flex-direction: row; /* Keep side-by-side on very small screens for consistency */
+                align-items: center;
+                justify-content: flex-start; /* Align left */
                 margin-bottom: 10px;
-                max-width: 95%; /* Allow it to be wider */
+                max-width: 95%;
             }
             .color-box {
                 width: 30px;
                 height: 30px;
-                margin-bottom: 5px; /* Space between box and input when stacked */
-                margin-inline-end: 0; /* Remove horizontal margin when stacked */
-                align-self: flex-start; /* Align box to left if stacking */
-                margin-right: auto; /* Push it to the right in RTL flex-end */
-                margin-left: unset; /* Remove default left margin if any */
+                margin-inline-end: 10px; /* Keep margin for side-by-side */
+                margin-bottom: 0;
             }
              .input-group input[type="text"] {
                 font-size: 0.9em;
-                width: 100%; /* Full width when stacked */
-                max-width: 250px; /* But limit max width */
+                width: auto; /* Let content manage width */
+                flex-grow: 1; /* Take available space */
                 text-align: right; /* Align text to right in RTL */
             }
             button#submitButton {
@@ -419,14 +420,11 @@
                 margin-bottom: 15px;
             }
             .color-info-row {
-                flex-direction: row; /* Keep side-by-side in success */
-                align-items: center;
-                justify-content: flex-start; /* Align to start for consistency */
                 margin-bottom: 10px;
-                max-width: 95%; /* Make rows wider for mobile */
+                max-width: 95%;
             }
             .color-info-row img {
-                width: 40px; /* Even smaller icons */
+                width: 40px;
                 height: 40px;
                 margin-inline-end: 10px;
             }
@@ -442,6 +440,8 @@
 </head>
 <body>
     <div class="puzzle-container" id="puzzleContainer">
+        <img src="images/a.jpg" alt="Initial image for puzzle" class="main-header-image">
+        
         <div class="content-overlay">
             <h1>איזה גוון יותר עמוק?</h1>
             <h2>לגוון העמוק ביותר הקלד "a", לגוון כמעט הכי עמוק הקלד "b", לגוון כמעט הכי פחות עמוק הקלד "c", לגוון הכי פחות עמוק הקלד "d"</h2>
@@ -478,4 +478,160 @@
             <span class="numbers">301, 328, 355, 382</span>
         </div>
         <div class="color-info-row">
-            <img src="images/white.jpg" alt="
+            <img src="images/white.jpg" alt="White Color Icon">
+            <span class="equal-sign">=</span>
+            <span class="numbers">440, 305, 332, 359, 386, 413, 467</span>
+        </div>
+        <div class="color-info-row">
+            <img src="images/red.jpg" alt="Red Color Icon">
+            <span class="equal-sign">=</span>
+            <span class="numbers">474, 475, 476, 477, 425, 452, 479</span>
+        </div>
+        <div class="color-info-row">
+            <img src="images/blue.jpg" alt="Blue Color Icon">
+            <span class="equal-sign">=</span>
+            <span class="numbers">103, 130, 241, 268</span>
+        </div>
+    </div>
+
+    <div class="star-burst-container" id="starBurstContainer"></div>
+    <audio id="wrongSound" src="audio/wrong_sound.mp3" preload="auto"></audio>
+    <audio id="correctSound" src="audio/correct_sound.mp3" preload="auto"></audio>
+
+    <script>
+        const redInput = document.getElementById('redInput');
+        const blueInput = document.getElementById('blueInput');
+        const greenInput = document.getElementById('greenInput');
+        const yellowInput = document.getElementById('yellowInput');
+        const submitButton = document.getElementById('submitButton');
+        const resultMessage = document.getElementById('resultMessage');
+        const starBurstContainer = document.getElementById('starBurstContainer');
+        const wrongSound = document.getElementById('wrongSound');
+        const correctSound = document.getElementById('correctSound');
+        const puzzleContainer = document.getElementById('puzzleContainer');
+        const successContent = document.getElementById('successContent');
+        const successMessageText = document.getElementById('successMessageText'); 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM content loaded. Initializing state.");
+            // Ensure puzzle container is visible and success content is hidden on load
+            puzzleContainer.style.display = 'flex'; 
+            puzzleContainer.style.opacity = '1';
+            successContent.style.display = 'none'; 
+            successContent.style.opacity = '0'; // Ensure it starts transparent for smooth transition
+
+            wrongSound.load(); 
+            correctSound.load();
+        });
+        
+        // Helper to normalize input (trim, lowercase, remove quotes)
+        function normalizeInput(input) {
+            return input.trim().toLowerCase().replace(/['"]/g, ''); 
+        }
+
+        // פונקציה ליצירת חלקיקי כוכבים/נצנצים
+        function createStarBurst() {
+            console.log("Creating star burst effect.");
+            const numParticles = 30;
+            const colors = ['#FFF', '#FFD700', '#FFC0CB']; 
+            starBurstContainer.innerHTML = ''; 
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('star-particle');
+                // Particles burst from center
+                particle.style.left = `calc(50% + ${(Math.random() - 0.5) * 60}vw)`;
+                particle.style.top = `calc(50% + ${(Math.random() - 0.5) * 60}vh)`;
+                particle.style.width = `${Math.random() * 8 + 4}px`;
+                particle.style.height = particle.style.width;
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animationDelay = `${Math.random() * 0.5}s`;
+                starBurstContainer.appendChild(particle);
+            }
+            // Clear particles after animation
+            setTimeout(() => {
+                starBurstContainer.innerHTML = ''; 
+            }, 2000); 
+        }
+
+        // פונקציה להצגת הודעת תוצאה ויישום אפקטים
+        function showResult(message, isCorrect) {
+            console.log(`Showing result: "${message}", isCorrect: ${isCorrect}`);
+            resultMessage.textContent = message;
+            resultMessage.style.display = 'block';
+            resultMessage.classList.remove('error', 'success');
+
+            if (isCorrect) {
+                resultMessage.classList.add('success');
+                correctSound.play().catch(e => console.error("Error playing correct sound:", e));
+                createStarBurst(); 
+                
+                // Hide the main puzzle container smoothly
+                puzzleContainer.style.opacity = 0;
+                puzzleContainer.style.pointerEvents = 'none'; // Make it unclickable
+
+                setTimeout(() => {
+                    puzzleContainer.style.display = 'none'; // Fully hide after opacity transition
+
+                    // Show the success content smoothly
+                    successContent.style.display = 'flex'; 
+                    // Small delay to ensure display:flex is applied before starting opacity transition
+                    setTimeout(() => {
+                         successContent.style.opacity = 1;
+                    }, 10); 
+                    console.log("Transitioned to success content.");
+                }, 500); // Wait for puzzleContainer opacity transition
+                
+                // Hide the temporary result message as successContent takes over
+                resultMessage.style.display = 'none'; 
+            } else {
+                resultMessage.classList.add('error');
+                document.body.classList.add('shake'); // Add shake animation to body
+                wrongSound.play().catch(e => console.error("Error playing wrong sound:", e));
+                if (navigator.vibrate) { // Vibrate for haptic feedback on mobile
+                    navigator.vibrate(200);
+                }
+                setTimeout(() => {
+                    document.body.classList.remove('shake'); // Remove shake after animation
+                    console.log("Shake animation removed.");
+                }, 500);
+                setTimeout(() => {
+                    resultMessage.style.display = 'none'; // Hide error message after a duration
+                }, 3000);
+            }
+        }
+
+        // טיפול בלחיצה על כפתור השליחה
+        submitButton.addEventListener('click', () => {
+            console.log("Submit button clicked.");
+            const redAnswer = normalizeInput(redInput.value);
+            const blueAnswer = normalizeInput(blueInput.value);
+            const greenAnswer = normalizeInput(greenInput.value);
+            const yellowAnswer = normalizeInput(yellowInput.value);
+
+            // Correct answers based on instructions
+            // green: a, red: b, blue: c, yellow: d
+            const isRedCorrect = redAnswer === "b";
+            const isBlueCorrect = blueAnswer === "c";
+            const isGreenCorrect = greenAnswer === "a";
+            const isYellowCorrect = yellowAnswer === "d";
+
+            if (isRedCorrect && isBlueCorrect && isGreenCorrect && isYellowCorrect) {
+                showResult("תשובה נכונה! המנעול נפתח, גזור את האזיקון.", true);
+            } else {
+                showResult("תשובה שגויה!", false);
+            }
+        });
+
+        // מאפשר לחיצה על Enter בכל אחד מתאי ההקלדה לשליחת התשובה
+        const inputFields = document.querySelectorAll('.input-group input[type="text"]');
+        inputFields.forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    console.log("Enter key pressed on an input field.");
+                    submitButton.click(); 
+                }
+            });
+        });
+    </script>
+</body>
+</html>
